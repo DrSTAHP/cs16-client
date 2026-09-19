@@ -30,6 +30,8 @@
 #define SF_SPRITE_ONCE 0x0002
 #define SF_SPRITE_TEMPORARY 0x8000
 
+#include "customentity.h"
+
 class CSprite : public CPointEntity
 {
 public:
@@ -145,8 +147,32 @@ public:
 	inline int GetFlags(void) { return pev->rendermode & 0xF0; }
 	inline int GetStartEntity(void) { return pev->sequence & 0xFFF; }
 	inline int GetEndEntity(void) { return pev->skin & 0xFFF; }
-	const Vector &GetStartPos(void);
-	const Vector &GetEndPos(void);
+	const Vector &GetStartPos(void)
+	{
+		int type = GetType();
+		if( type == BEAM_POINTS || type == BEAM_HOSE )
+		{
+			return pev->angles;
+		}
+
+		edict_t *pent =  g_engfuncs.pfnPEntityOfEntIndex( GetEndEntity() );
+		if( pent )
+			return pent->v.origin;
+		return pev->angles;
+	}
+	const Vector &GetEndPos(void)
+	{
+		int type = GetType();
+		if( type == BEAM_POINTS || type == BEAM_HOSE )
+		{
+			return pev->angles;
+		}
+
+		edict_t *pent =  g_engfuncs.pfnPEntityOfEntIndex( GetEndEntity() );
+		if( pent )
+			return pent->v.origin;
+		return pev->angles;
+	}
 
 public:
 	Vector Center(void){ return (GetStartPos() + GetEndPos()) * 0.5; }
