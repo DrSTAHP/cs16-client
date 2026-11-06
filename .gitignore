@@ -66,3 +66,4 @@ regamebuild/
 .vs/
 
 build.sh
+compile_commands.json
